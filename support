@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Abdulrahman+ Helpdesk Widget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Corrected Font Awesome CSS with proper integrity hash -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-V0X5QMgXZQ3b0mij7LJWt0DbtA3W0bQotOTXpN4BxeJcKfUfA9RmK6tH0mZt1cYvS5E6hN6PJbkB/ZmY58FUpg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ============================================
+       Root Variables for Consistent Theming
+    ============================================ */
+    :root {
+      /* Colors */
+      --color-primary: #1ABC9C; /* Teal */
+      --color-secondary: #2C3E50; /* Dark Slate */
+      --color-accent: #E74C3C; /* Coral */
+      --color-background-light: #FFFFFF; /* Soft White */
+      --color-background-dark: #F5F5F5; /* Light Gray */
+      --color-text-dark: #333333; /* Dark Gray */
+      --color-text-light: #777777; /* Muted Gray */
+      
+      /* Typography */
+      --font-primary: 'Roboto', sans-serif;
+      --font-secondary: 'Lato', sans-serif;
+      
+      /* Spacing */
+      --spacing-small: 8px;
+      --spacing-medium: 16px;
+      --spacing-large: 24px;
+      
+      /* Borders & Shadows */
+      --border-radius: 8px;
+      --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      
+      /* Transitions */
+      --transition-speed: 0.3s;
+      
+      /* Misc */
+      --max-width: 1200px;
+    }
+    
+    /* ============================================
+       Global Styles
+    ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-secondary);
+      margin: 0;
+      padding: 0;
+      background-color: var(--color-background-light);
+      color: var(--color-text-dark);
+      line-height: 1.6;
+      height: 100%;
+      overflow: hidden; /* Prevent scrolling within iframe */
+    }
+    
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color var(--transition-speed);
+    }
+    
+    a:hover, a:focus {
+      color: var(--color-accent);
+      text-decoration: underline;
+    }
+    
+    h2, h3, h4 {
+      font-family: var(--font-primary);
+      color: var(--color-secondary);
+    }
+    
+    p {
+      margin: 0 0 var(--spacing-medium) 0;
+      color: var(--color-text-light);
+    }
+    
+    .container, .main-container {
+      width: 90%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--spacing-large) 0;
+      box-sizing: border-box;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    
+    /* ============================================
+       Support Options Styles
+    ============================================ */
+    .support-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-medium);
+      justify-content: center;
+      margin-top: var(--spacing-large);
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    
+    .support-card {
+      background-color: var(--color-background-dark);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: var(--spacing-large);
+      flex: 1 1 280px; /* Flexible width */
+      max-width: 350px;
+      text-align: center;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed), background 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      font-family: var(--font-secondary);
+      min-width: 200px;
+      min-height: 120px;
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+    }
+    
+    .support-card:hover, .support-card:focus {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      border-color: var(--color-primary);
+      background: linear-gradient(135deg, rgba(26, 188, 156, 0.1), #e6eaf0);
+      outline: none; /* Remove default focus outline */
+    }
+    
+    .support-card i {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      color: var(--color-primary);
+      transition: transform var(--transition-speed);
+    }
+    .support-card:hover i, .support-card:focus i {
+      transform: scale(1.2);
+    }
+    
+    .support-card h3 {
+      font-size: 1.5em;
+      margin-bottom: var(--spacing-small);
+      color: var(--color-primary);
+    }
+    
+    .support-card p {
+      font-size: 1em;
+      margin-bottom: var(--spacing-medium);
+      color: var(--color-text-light);
+    }
+    
+    .support-card button {
+      background-color: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-small) var(--spacing-medium);
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color var(--transition-speed);
+      font-family: var(--font-secondary);
+    }
+    
+    .support-card button:hover, .support-card button:focus {
+      background-color: var(--color-accent);
+      outline: none;
+    }
+    
+    /* Tooltip Styles */
+    .tooltip-text {
+      font-size: 0.85em;
+      color: #fff;
+      background-color: var(--color-primary);
+      padding: 6px 10px;
+      border-radius: 4px;
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .support-card:hover .tooltip-text, .support-card:focus .tooltip-text {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--color-primary) transparent transparent transparent;
+    }
+    
+    /* ============================================
+       Breadcrumb Navigation
+    ============================================ */
+    .breadcrumb {
+      list-style: none;
+      display: flex;
+      padding: 0;
+      margin: 0 0 30px 0;
+      font-size: 0.95em;
+      color: #555;
+      font-family: var(--font-secondary);
+    }
+    .breadcrumb-item + .breadcrumb-item::before {
+      content: ">";
+      padding: 0 8px;
+      color: #aaa;
+    }
+    .breadcrumb-item a {
+      text-decoration: none;
+      color: var(--color-primary);
+      transition: color var(--transition-speed);
+    }
+    .breadcrumb-item a:hover {
+      color: var(--color-accent);
+      text-decoration: underline;
+    }
+    .breadcrumb-item.active {
+      color: var(--color-text-dark);
+      font-weight: 600;
+    }
+    
+    /* ============================================
+       Screen Titles & Back Button
+    ============================================ */
+    .screen-title {
+      font-family: var(--font-primary);
+      font-size: 2em;
+      color: var(--color-primary);
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .back-button {
+      display: inline-block;
+      margin-bottom: 30px;
+      color: var(--color-primary);
+      font-size: 1em;
+      text-decoration: none;
+      transition: color var(--transition-speed), transform var(--transition-speed), background-color var(--transition-speed);
+      cursor: pointer;
+      padding: 12px 25px;
+      border-radius: var(--border-radius);
+      font-family: var(--font-secondary);
+      background-color: #ffffff;
+      min-width: 200px;
+      min-height: 50px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+      border: 2px solid var(--color-secondary);
+      text-align: left;
+    }
+    .back-button:hover, .back-button:focus {
+      color: var(--color-accent);
+      text-decoration: underline;
+      background-color: rgba(26, 188, 156, 0.05);
+      transform: translateX(-3px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      outline: none;
+    }
+    
+    /* ============================================
+       Issue Form & Buttons
+    ============================================ */
+    .issue-form {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      padding: 30px 25px;
+      border-radius: 12px;
+      border: none;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      position: relative;
+      font-family: var(--font-secondary);
+      overflow-y: auto;
+    }
+    .issue-form h2 {
+      margin-bottom: 15px;
+      color: var(--color-primary);
+      text-align: center;
+      font-size: 1.6em;
+      font-weight: 700;
+    }
+    .issue-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .issue-form textarea,
+    .issue-form input {
+      width: 100%;
+      padding: 14px 20px;
+      margin: 15px 0;
+      border: 2px solid #ccc;
+      border-radius: var(--border-radius);
+      resize: vertical;
+      font-size: 1em;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      font-family: var(--font-secondary);
+    }
+    .issue-form textarea:focus,
+    .issue-form input:focus {
+      border-color: var(--color-primary);
+      outline: none;
+      box-shadow: 0 0 8px rgba(26, 188, 156, 0.3);
+    }
+    .issue-form textarea::placeholder,
+    .issue-form input::placeholder {
+      color: #aaa;
+      opacity: 1; /* Override Firefox's default opacity */
+    }
+    .big-button {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 15px 30px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all var(--transition-speed) ease;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 400px;
+      align-self: center;
+      text-align: center;
+      font-weight: 700;
+      font-family: var(--font-secondary);
+      min-width: 200px;
+      min-height: 60px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .big-button:hover, .big-button:focus {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      outline: none;
+    }
+    .big-button i {
+      margin-right: 8px;
+      transition: transform var(--transition-speed);
+    }
+    .big-button:hover i, .big-button:focus i {
+      transform: translateX(4px);
+    }
+    
+    /* Character Count and Validation Message */
+    .char-count {
+      text-align: right;
+      font-size: 0.9em;
+      color: #555;
+      margin-top: -12px;
+      margin-bottom: 15px;
+    }
+    .validation-message {
+      font-size: 0.9em;
+      color: #d32f2f;
+      margin-bottom: 15px;
+      display: none;
+      text-align: center;
+    }
+    .validation-message.success {
+      color: #388e3c;
+    }
+    
+    /* ============================================
+       Loader Screen Styles
+    ============================================ */
+    .loader-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(255,255,255,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .loader-circle {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid var(--color-primary);
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+    }
+    
+    .loader-text {
+      margin-top: 25px;
+      font-size: 1.4em;
+      color: #555;
+      font-weight: 500;
+      font-family: var(--font-secondary);
+    }
+    
+    /* ============================================
+       Solution Screen Styles
+    ============================================ */
+    .solution-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      font-family: var(--font-secondary);
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    .solution-screen .screen-title {
+      font-size: 1.7em;
+      color: var(--color-primary);
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .ai-solutions-box {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      padding: 25px 20px;
+      border-radius: var(--border-radius);
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow-y: auto;
+      max-height: 350px;
+      transition: max-height var(--transition-speed) ease;
+    }
+    .ai-solutions-box p {
+      margin-bottom: 18px;
+      line-height: 1.8;
+      color: #555;
+      font-size: 1em;
+      position: relative;
+      padding-left: 30px;
+      font-family: var(--font-secondary);
+    }
+    .ai-solutions-box p::before {
+      content: "\f0da"; /* Font Awesome chevron-right icon */
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-primary);
+    }
+    .ai-solutions-box p:last-child {
+      margin-bottom: 25px;
+    }
+    .ai-solutions-box p:last-child::before {
+      content: none;
+    }
+    
+    /* Disclaimer and Support Button */
+    .disclaimer {
+      font-size: 0.9em;
+      color: #777;
+      text-align: center;
+      margin-top: 15px;
+      font-family: var(--font-secondary);
+    }
+    .support-button {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 15px 30px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all var(--transition-speed) ease;
+      margin-top: 15px;
+      width: 100%;
+      max-width: 400px;
+      align-self: center;
+      text-align: center;
+      font-weight: 700;
+      display: none;
+      font-family: var(--font-secondary);
+      min-width: 200px;
+      min-height: 60px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .support-button:hover, .support-button:focus {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      outline: none;
+    }
+    
+    /* ============================================
+       Accordion Styles
+    ============================================ */
+    .accordion {
+      max-width: 800px;
+      margin: 40px auto;
+      border: 1.5px solid var(--color-secondary);
+      border-radius: 12px;
+      overflow: hidden;
+      font-family: var(--font-secondary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .accordion-item {
+      background-color: #fff;
+      border-bottom: 1px solid var(--color-secondary);
+      transition: background-color var(--transition-speed);
+    }
+    .accordion-item:last-child {
+      border-bottom: none;
+    }
+    .accordion-header {
+      background-color: #ffffff;
+      padding: 20px 25px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color var(--transition-speed);
+      border-radius: 0;
+    }
+    .accordion-header:hover, .accordion-header:focus {
+      background-color: rgba(26, 188, 156, 0.1);
+      outline: none;
+    }
+    .accordion-header h3 {
+      margin: 0;
+      font-size: 1.2em;
+      font-weight: 700;
+      color: var(--color-secondary);
+    }
+    .accordion-header .icon {
+      transition: transform var(--transition-speed);
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      font-size: 1em;
+      color: var(--color-primary);
+    }
+    .accordion-header.active .icon {
+      transform: rotate(180deg);
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, padding 0.5s ease;
+      background-color: #f9fafb;
+      padding: 0 25px;
+      border-radius: 0 0 12px 12px;
+    }
+    .accordion-content p {
+      margin: 20px 0;
+      font-size: 1em;
+      line-height: 1.8;
+      color: #555;
+    }
+    .accordion-item.active .accordion-content {
+      max-height: 500px; /* Adjust based on content length */
+      padding: 20px 25px;
+    }
+    
+    /* ============================================
+       Notification Message
+    ============================================ */
+    .notification {
+      margin-top: 20px;
+      padding: 15px 20px;
+      background-color: #ffdddd;
+      color: #d8000c;
+      border-left: 6px solid #f44336;
+      border-radius: 6px;
+      display: none;
+      width: 100%;
+      max-width: 400px;
+      font-size: 1em;
+      text-align: center;
+      font-family: var(--font-secondary);
+      transition: opacity 0.3s ease;
+    }
+    .notification.success {
+      background-color: #ddffdd;
+      color: #4f8a10;
+      border-left-color: #4CAF50;
+    }
+    .notification.show {
+      display: block;
+      opacity: 1;
+    }
+    
+    /* ============================================
+       Toast Notification Styles
+    ============================================ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: var(--color-primary);
+      color: #fff;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      z-index: 10000;
+    }
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .toast .close-button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    
+    /* ============================================
+       Footer Styles
+    ============================================ */
+    .footer {
+      background-color: #f9f9f9;
+      text-align: center;
+      padding: 25px 40px;
+      color: #555;
+      font-size: 0.95em;
+      border-top: 1px solid var(--color-secondary);
+      font-family: var(--font-secondary);
+    }
+    .footer-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: var(--max-width);
+      margin: 0 auto 20px auto;
+    }
+    .footer-section h4 {
+      margin-bottom: 12px;
+      color: var(--color-primary);
+      font-size: 1.1em;
+      font-weight: 700;
+    }
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+    .footer-section ul li a {
+      text-decoration: none;
+      color: var(--color-primary);
+      transition: color var(--transition-speed);
+      font-family: var(--font-secondary);
+    }
+    .footer-section ul li a:hover {
+      color: var(--color-accent);
+      text-decoration: underline;
+    }
+    .footer-bottom {
+      text-align: center;
+      color: #777;
+      font-size: 0.85em;
+      margin-top: 15px;
+    }
+    
+    /* Social Media Icons */
+    .social-icons a {
+      color: var(--color-primary);
+      font-size: 1.3em;
+      margin-right: 20px;
+      transition: color var(--transition-speed), transform 0.3s;
+      display: inline-block;
+    }
+    .social-icons a:hover {
+      color: var(--color-accent);
+      transform: scale(1.2);
+    }
+    
+    /* ============================================
+       Modal Styles (Optional)
+    ============================================ */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10001;
+    }
+    .modal.hidden {
+      display: none;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      position: relative;
+      font-family: var(--font-secondary);
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      color: var(--color-primary);
+      text-align: center;
+      font-size: 1.6em;
+      font-weight: 700;
+    }
+    .modal-content .close-button {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      color: #aaa;
+      cursor: pointer;
+      transition: color var(--transition-speed);
+    }
+    .modal-content .close-button:hover {
+      color: var(--color-primary);
+    }
+    
+    /* Responsive Adjustments */
+    @media (min-width: 1024px) {
+      .main-container {
+        width: 80%;
+      }
+      .support-options {
+        justify-content: space-around;
+      }
+      .support-card {
+        flex: 1 1 300px;
+        max-width: 350px;
+      }
+    }
+    
+    @media (min-width: 800px) and (max-width: 1023px) {
+      .main-container {
+        width: 90%;
+        padding: var(--spacing-medium) 20px;
+        margin: 20px auto;
+      }
+      
+      .support-options {
+        justify-content: space-between;
+      }
+      
+      .support-card {
+        flex: 1 1 45%;
+        max-width: 45%;
+      }
+      
+      .accordion-header h3 {
+        font-size: 1.1em;
+      }
+      
+      .screen-title {
+        font-size: 1.7em;
+      }
+    }
+    
+    @media (max-width: 800px) {
+      .support-options {
+        flex-direction: column;
+        align-items: center;
+      }
+      .support-card {
+        width: 90%;
+        max-width: 100%;
+        min-width: 200px;
+      }
+      .main-container {
+        padding: 40px 20px;
+        margin: 20px auto 20px auto;
+      }
+      .big-button,
+      .support-button,
+      .back-button {
+        max-width: 100%;
+      }
+      .accordion-header h3 {
+        font-size: 1em;
+      }
+      .screen-title {
+        font-size: 1.5em;
+      }
+    }
+    
+    /* Hidden Utility Class */
+    .hidden {
+      display: none !important;
+    }
+    
+    /* ============================================
+       Rate Answer Buttons Styles
+    ============================================ */
+    .rate-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .rate-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 2em;
+      color: #777;
+      transition: color var(--transition-speed), transform var(--transition-speed);
+    }
+    .rate-button:hover, .rate-button:focus {
+      color: var(--color-accent);
+      transform: scale(1.2);
+      outline: none;
+    }
+    
+    /* ============================================
+       AI Interaction Section Styles
+    ============================================ */
+    /* Add any additional styles specific to AI interactions here */
+  </style>
+</head>
+<body>
+  
+  <!-- Loader Screen -->
+  <div id="loader-screen" class="loader-screen" role="alert" aria-live="assertive">
+    <div class="loader-circle"></div>
+    <div class="loader-text">Processing, please wait...</div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Helpdesk</li>
+      </ol>
+    </nav>
+
+    <!-- Initial Screen: Selection Buttons -->
+    <div id="screen-initial" class="fade-in">
+      <div class="support-options">
+        <!-- New Customer Support Card -->
+        <div class="support-card" tabindex="0" aria-label="New Customer Support">
+          <i class="fas fa-user-plus fa-3x"></i>
+          <h3>New Customer</h3>
+          <p>Get started with our services.</p>
+          <button id="btn-new">Get Started</button>
+          <span class="tooltip-text">Start your journey with us.</span>
+        </div>
+        
+        <!-- Existing Customer Support Card -->
+        <div class="support-card" tabindex="0" aria-label="Existing Customer Support">
+          <i class="fas fa-user-check fa-3x"></i>
+          <h3>Existing Customer</h3>
+          <p>Access your account and support.</p>
+          <button id="btn-existing">Access Support</button>
+          <span class="tooltip-text">Access your account and support.</span>
+        </div>
+        
+        <!-- FAQ Support Card -->
+        <div class="support-card" tabindex="0" aria-label="FAQs">
+          <i class="fas fa-question-circle fa-3x"></i>
+          <h3>FAQs</h3>
+          <p>Find answers to common questions.</p>
+          <button id="btn-faq">View FAQs</button>
+          <span class="tooltip-text">Find answers to common questions.</span>
+        </div>
+        
+        <!-- Ask AI Assistant Support Card (Initially Hidden) -->
+        <div class="support-card hidden" tabindex="0" aria-label="Ask a Question">
+          <i class="fas fa-robot fa-3x"></i>
+          <h3>Ask a Question</h3>
+          <p>Get instant answers from our AI.</p>
+          <button id="btn-ai">Ask AI</button>
+          <span class="tooltip-text">Get instant answers from our AI.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Customer Screen -->
+    <div id="screen-new" class="fade-in hidden">
+      <button class="back-button" id="back-new" aria-label="Back to Previous Screen">← Back</button>
+      <h2 class="screen-title">New Customer Options</h2>
+      <div class="support-options">
+        <div class="support-card" tabindex="0" aria-label="Claim a New Offer">
+          <i class="fas fa-gift fa-3x"></i>
+          <h3>I want to claim a new offer</h3>
+          <p>Redeem your promo code or discount.</p>
+          <button id="new-offer">Claim Offer</button>
+          <span class="tooltip-text">Redeem your promo code or discount.</span>
+        </div>
+        <div class="support-card" tabindex="0" aria-label="Become a Client">
+          <i class="fas fa-user-tie fa-3x"></i>
+          <h3>I want to become a client</h3>
+          <p>Join us and choose a plan.</p>
+          <button id="new-client">Become Client</button>
+          <span class="tooltip-text">Join us and choose a plan.</span>
+        </div>
+        <div class="support-card" tabindex="0" aria-label="General Question">
+          <i class="fas fa-question-circle fa-3x"></i>
+          <h3>I have a general question</h3>
+          <p>Check our FAQs or contact support.</p>
+          <button id="new-general">Ask Question</button>
+          <span class="tooltip-text">Check our FAQs or contact support.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Offer Screen -->
+    <div id="screen-offer" class="fade-in hidden">
+      <button class="back-button" id="back-offer" aria-label="Back to New Customer Options">← Back</button>
+      <h2 class="screen-title">Claim a New Offer</h2>
+      <p>We have special offers for new users! Click below to sign up and redeem your promo code or discount.</p>
+      <button class="big-button" id="proceed-offer"><i class="fas fa-arrow-right" aria-hidden="true"></i> Proceed to Sign Up</button>
+    </div>
+
+    <!-- Client Screen -->
+    <div id="screen-client" class="fade-in hidden">
+      <button class="back-button" id="back-client" aria-label="Back to New Customer Options">← Back</button>
+      <h2 class="screen-title">Become a Client</h2>
+      <p>Join us to streamline your services. Click below to choose a plan and get started.</p>
+      <button class="big-button" id="proceed-client"><i class="fas fa-arrow-right" aria-hidden="true"></i> Proceed to Sign Up</button>
+    </div>
+
+    <!-- General Question Screen -->
+    <div id="screen-general" class="fade-in hidden">
+      <button class="back-button" id="back-general" aria-label="Back to New Customer Options">← Back</button>
+      <h2 class="screen-title">General Question</h2>
+      <div class="issue-form">
+        <h2>Ask Your Question</h2>
+        <textarea id="general-question-text" placeholder="Describe your question here..." required aria-required="true"></textarea>
+        <div class="char-count" aria-live="polite">
+          Characters: <span id="general-char-count">0</span>/25
+        </div>
+        <div id="general-validation-message" class="validation-message" role="alert"></div>
+        <button type="button" class="big-button" id="general-submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Question</button>
+      </div>
+    </div>
+
+    <!-- Existing Customer Screen -->
+    <div id="screen-existing" class="fade-in hidden">
+      <button class="back-button" id="back-existing" aria-label="Back to Previous Screen">← Back</button>
+      <h2 class="screen-title">Existing Customer Options</h2>
+      <div class="support-options">
+        <div class="support-card" tabindex="0" aria-label="General Account Question">
+          <i class="fas fa-user-cog fa-3x"></i>
+          <h3>I have a general account question</h3>
+          <p>Manage your account settings.</p>
+          <button id="exist-account">Ask Account Question</button>
+          <span class="tooltip-text">Manage your account settings.</span>
+        </div>
+        <div class="support-card" tabindex="0" aria-label="Issue with a Post">
+          <i class="fas fa-edit fa-3x"></i>
+          <h3>I have an issue with a post</h3>
+          <p>Report or resolve post-related issues.</p>
+          <button id="exist-post">Report Post Issue</button>
+          <span class="tooltip-text">Report or resolve post-related issues.</span>
+        </div>
+        <div class="support-card" tabindex="0" aria-label="Billing Issue">
+          <i class="fas fa-file-invoice-dollar fa-3x"></i>
+          <h3>I have a billing issue</h3>
+          <p>Report billing-related issues.</p>
+          <button id="exist-billing">Report Billing Issue</button>
+          <span class="tooltip-text">Report billing-related issues.</span>
+        </div>
+        <div class="support-card" tabindex="0" aria-label="Need Support (Other)">
+          <i class="fas fa-life-ring fa-3x"></i>
+          <h3>I need support (Other)</h3>
+          <p>Access specialized support services.</p>
+          <button id="exist-support">Access Support</button>
+          <span class="tooltip-text">Access specialized support services.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue Submission Screen -->
+    <div id="screen-issue" class="fade-in hidden">
+      <button class="back-button" id="back-issue" aria-label="Back to Existing Customer Options">← Back</button>
+      <h2 class="screen-title" id="issue-title">Describe Your Issue</h2>
+      <div class="issue-form">
+        <h2>What's Going On?</h2>
+        <textarea id="issue-text" placeholder="Describe your issue here..." required aria-required="true"></textarea>
+        <div class="char-count" aria-live="polite">
+          Characters: <span id="char-count">0</span>/25
+        </div>
+        <div id="validation-message" class="validation-message" role="alert"></div>
+        <button type="button" class="big-button" id="issue-submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Issue</button>
+      </div>
+    </div>
+
+    <!-- Support Redirect Screen -->
+    <div id="screen-support" class="fade-in hidden">
+      <button class="back-button" id="back-support" aria-label="Back to Existing Customer Options">← Back</button>
+      <h2 class="screen-title">Need Support (Other)</h2>
+      <p>We can direct you to our specialized support ticket system for advanced help.</p>
+      <button class="big-button" id="support-redirect"><i class="fas fa-arrow-right" aria-hidden="true"></i> Submit Support Ticket</button>
+    </div>
+
+    <!-- Billing Issue Screen -->
+    <div id="screen-billing" class="fade-in hidden">
+      <button class="back-button" id="back-billing" aria-label="Back to Existing Customer Options">← Back</button>
+      <h2 class="screen-title">Billing Issues</h2>
+      <div class="issue-form">
+        <h2>Describe Your Billing Issue</h2>
+        <textarea id="billing-issue-text" placeholder="Describe your billing issue here..." required aria-required="true"></textarea>
+        <div class="char-count" aria-live="polite">
+          Characters: <span id="billing-char-count">0</span>/25
+        </div>
+        <div id="billing-validation-message" class="validation-message" role="alert"></div>
+        <button type="button" class="big-button" id="billing-submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Billing Issue</button>
+      </div>
+    </div>
+
+    <!-- Solution Screen -->
+    <div id="screen-solution" class="fade-in hidden solution-screen">
+      <button class="back-button" id="back-solution" aria-label="Back to Previous Screen">← Back</button>
+      <h2 class="screen-title">AI Suggestions</h2>
+      <div class="ai-solutions-box" id="ai-solutions-box" aria-live="polite"></div>
+      
+      <!-- Rate Answer Buttons -->
+      <div class="rate-buttons">
+        <button class="rate-button" id="rate-up" aria-label="Thumbs Up"><i class="fas fa-thumbs-up"></i></button>
+        <button class="rate-button" id="rate-down" aria-label="Thumbs Down"><i class="fas fa-thumbs-down"></i></button>
+      </div>
+      
+      <button class="big-button" id="solution-done"><i class="fas fa-check" aria-hidden="true"></i> Done</button>
+      <button class="support-button" id="reach-out-support"><i class="fas fa-life-ring" aria-hidden="true"></i> Reach Out to Support</button>
+      <p class="disclaimer">Please verify AI responses as they may be inaccurate.</p>
+    </div>
+
+    <!-- FAQ Section -->
+    <div id="faq-section" class="fade-in hidden">
+      <h2 class="screen-title">Frequently Asked Questions</h2>
+      <div class="accordion">
+        
+        <div class="accordion-item">
+          <div class="accordion-header" tabindex="0" aria-expanded="false" aria-controls="faq1">
+            <h3>1. How do I reset my password?</h3>
+            <i class="fas fa-chevron-down icon" aria-hidden="true"></i>
+          </div>
+          <div class="accordion-content" id="faq1">
+            <p>You can reset your password by clicking on the "Forgot Password" link on the login page and following the instructions sent to your email.</p>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <div class="accordion-header" tabindex="0" aria-expanded="false" aria-controls="faq2">
+            <h3>2. What services does Abdulrahman+ offer?</h3>
+            <i class="fas fa-chevron-down icon" aria-hidden="true"></i>
+          </div>
+          <div class="accordion-content" id="faq2">
+            <p>Abdulrahman+ specializes in social media creative posts, remote event planning, and creating engaging reels for major social media platforms. Our comprehensive services are designed to boost your online presence and engage your target audience effectively.</p>
+          </div>
+        </div>
+        
+        <!-- Add more FAQ items as needed -->
+        
+        <div class="accordion-item">
+          <div class="accordion-header" tabindex="0" aria-expanded="false" aria-controls="faq3">
+            <h3>3. Do you provide training for in-house teams on social media management?</h3>
+            <i class="fas fa-chevron-down icon" aria-hidden="true"></i>
+          </div>
+          <div class="accordion-content" id="faq3">
+            <p>Yes, we offer training sessions for in-house teams to enhance their social media management skills. Our training covers content creation, strategy development, analytics interpretation, and best practices to ensure your team is well-equipped to manage your social media presence.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Search Bar (Removed Search Button) -->
+      <div class="faq-search-bar" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+        <input type="text" id="faq-search-accordion" placeholder="Search FAQs..." aria-label="Search FAQs">
+        <!-- Removed the search button as per request -->
+      </div>
+
+      <!-- No Results Notification -->
+      <div id="no-results" class="notification" role="alert">
+        No FAQs match your search.
+      </div>
+    </div>
+
+    <!-- AI Interaction Section -->
+    <div id="ai-section" class="fade-in hidden">
+      <button class="back-button" id="back-ai" aria-label="Back to Previous Screen">← Back</button>
+      <h2 class="screen-title">Ask Us Anything</h2>
+      <form class="issue-form" id="ai-form">
+        <textarea id="ai-query" name="ai-query" rows="4" placeholder="Type your question here..." required aria-required="true"></textarea>
+        <button type="submit" class="big-button"><i class="fas fa-paper-plane" aria-hidden="true"></i> Get Answer</button>
+      </form>
+      <div id="ai-response" class="validation-message hidden" aria-live="polite"></div>
+    </div>
+    
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h4>About Us</h4>
+        <p>Learn more about Abdulrahman+ and our mission.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#">Social Media Creative Posts</a></li>
+          <li><a href="#">Remote Event Planning</a></li>
+          <li><a href="#">Reels for Social Media</a></li>
+          <li><a href="#">Flexible Payment Plans</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://www.dbueducation.com.au/blog" target="_blank" rel="noopener noreferrer">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
+    <p class="footer-bottom">© <span id="current-year"></span> Abdulrahman+. All rights reserved.</p>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <span id="toast-message"></span>
+    <button type="button" class="close-button" aria-label="Close Toast">×</button>
+  </div>
+
+  <!-- Modal (Optional) -->
+  <div class="modal hidden" id="info-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <button class="close-button" aria-label="Close Modal">×</button>
+      <h2 id="modal-title">Important Information</h2>
+      <p>Your message here...</p>
+    </div>
+  </div>
+
+  <!-- Embedded JavaScript -->
+  <script>
+    (function() {
+      /*
+       * JavaScript for Abdulrahman+ Helpdesk AI Integration and Enhancements
+       */
+
+      // Loader
+      const loaderScreen = document.getElementById('loader-screen');
+
+      // Screens
+      const screens = {
+        initial: document.getElementById('screen-initial'),
+        new: document.getElementById('screen-new'),
+        offer: document.getElementById('screen-offer'),
+        client: document.getElementById('screen-client'),
+        general: document.getElementById('screen-general'),
+        existing: document.getElementById('screen-existing'),
+        issue: document.getElementById('screen-issue'),
+        support: document.getElementById('screen-support'),
+        billing: document.getElementById('screen-billing'),
+        solution: document.getElementById('screen-solution'),
+        faq: document.getElementById('faq-section'),
+        ai: document.getElementById('ai-section') // AI Section
+      };
+
+      // Buttons
+      const buttons = {
+        new: document.getElementById('btn-new'),
+        existing: document.getElementById('btn-existing'),
+        faq: document.getElementById('btn-faq'),
+        ai: document.getElementById('btn-ai'),
+        backNew: document.getElementById('back-new'),
+        backExisting: document.getElementById('back-existing'),
+        newOffer: document.getElementById('new-offer'),
+        newClient: document.getElementById('new-client'),
+        newGeneral: document.getElementById('new-general'),
+        backOffer: document.getElementById('back-offer'),
+        backClient: document.getElementById('back-client'),
+        backGeneral: document.getElementById('back-general'),
+        proceedOffer: document.getElementById('proceed-offer'),
+        proceedClient: document.getElementById('proceed-client'),
+        existAccount: document.getElementById('exist-account'),
+        existPost: document.getElementById('exist-post'),
+        existBilling: document.getElementById('exist-billing'),
+        existSupport: document.getElementById('exist-support'),
+        backIssue: document.getElementById('back-issue'),
+        backSupport: document.getElementById('back-support'),
+        submitIssue: document.getElementById('issue-submit'),
+        submitGeneral: document.getElementById('general-submit'),
+        submitBilling: document.getElementById('billing-submit'),
+        supportRedirect: document.getElementById('support-redirect'),
+        solutionDone: document.getElementById('solution-done'),
+        reachOutSupport: document.getElementById('reach-out-support'),
+        backBilling: document.getElementById('back-billing'),
+        searchButton: document.getElementById('search-button'),
+        faqSearchButton: document.getElementById('search-button-accordion'),
+        toastClose: document.querySelector('.toast .close-button'),
+        openModalButton: document.getElementById('open-modal'), // If you have a button to open modal
+        closeModalButton: document.querySelector('.modal .close-button'),
+        backAi: document.getElementById('back-ai'), // Back button in AI section
+        rateUp: document.getElementById('rate-up'),
+        rateDown: document.getElementById('rate-down')
+      };
+
+      // Notifications
+      const notifications = {
+        billing: document.getElementById('billing-validation-message'),
+        noResults: document.getElementById('no-results'),
+        validation: document.getElementById('validation-message'),
+        generalValidation: document.getElementById('general-validation-message'),
+        toast: document.getElementById('toast'),
+        toastMessage: document.getElementById('toast-message'),
+        aiResponse: document.getElementById('ai-response')
+      };
+
+      // FAQ Elements
+      const faq = {
+        searchInput: document.getElementById('faq-search-accordion'),
+        searchButton: document.getElementById('search-button-accordion'),
+        accordionHeaders: document.querySelectorAll('.accordion-header'),
+        accordionItems: document.querySelectorAll('.accordion-item')
+      };
+
+      // Current Year in Footer
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+
+      // Initialize: Show Initial Screen
+      function showScreen(screen) {
+        // Hide all screens
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        // Show the desired screen
+        screen.classList.remove('hidden');
+        // Hide no results notification
+        if (screen !== screens.faq) {
+          notifications.noResults.style.display = "none";
+        }
+      }
+
+      // Initially show the initial screen
+      showScreen(screens.initial);
+
+      /*---------------------------------------
+       * Navigation - New vs Existing vs FAQs
+       ---------------------------------------*/
+      buttons.new.addEventListener('click', () => {
+        console.log('New Customer Button Clicked');
+        showScreen(screens.new);
+      });
+      buttons.existing.addEventListener('click', () => {
+        console.log('Existing Customer Button Clicked');
+        showScreen(screens.existing);
+      });
+      buttons.faq.addEventListener('click', () => {
+        console.log('FAQs Button Clicked');
+        showScreen(screens.faq);
+      });
+      buttons.ai.addEventListener('click', () => {
+        console.log('AI Button Clicked');
+        showScreen(screens.ai);
+      });
+
+      // Keyboard Accessibility
+      [buttons.new, buttons.existing, buttons.faq, buttons.ai].forEach(button => {
+        button.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            button.click();
+          }
+        });
+      });
+
+      // Add back buttons event listeners
+      buttons.backNew.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to Initial from New Customer');
+        showScreen(screens.initial);
+      });
+      buttons.backExisting.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to Initial from Existing Customer');
+        showScreen(screens.initial);
+      });
+      buttons.backOffer.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to New Customer from Offer');
+        showScreen(screens.new);
+      });
+      buttons.backClient.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to New Customer from Client');
+        showScreen(screens.new);
+      });
+      buttons.backGeneral.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to New Customer from General Question');
+        showScreen(screens.new);
+      });
+      buttons.backIssue.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to Existing Customer from Issue');
+        showScreen(screens.existing);
+      });
+      buttons.backSupport.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to Existing Customer from Support');
+        showScreen(screens.existing);
+      });
+      buttons.backBilling.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to Existing Customer from Billing');
+        showScreen(screens.existing);
+      });
+      buttons.backAi.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Back to Initial from AI Section');
+        showScreen(screens.initial);
+      });
+
+      /*---------------------------------------
+       * New Customer Sub-options
+       ---------------------------------------*/
+      buttons.newOffer.addEventListener('click', () => {
+        console.log('New Offer Button Clicked');
+        showScreen(screens.offer);
+      });
+      buttons.newClient.addEventListener('click', () => {
+        console.log('New Client Button Clicked');
+        showScreen(screens.client);
+      });
+      buttons.newGeneral.addEventListener('click', () => {
+        console.log('New General Question Button Clicked');
+        showScreen(screens.general);
+      });
+
+      // Keyboard Accessibility
+      [buttons.newOffer, buttons.newClient, buttons.newGeneral].forEach(button => {
+        button.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            button.click();
+          }
+        });
+      });
+
+      /*---------------------------------------
+       * Proceed to Sign Up - Offer & Client
+       ---------------------------------------*/
+      buttons.proceedOffer.addEventListener('click', () => {
+        console.log('Proceed to Sign Up (Offer)');
+        showLoader();
+        setTimeout(() => {
+          hideLoader();
+          showToast("Redirecting to Sign Up...");
+          window.location.href = "https://accounts.dbueducation.com.au/chooseplan";
+        }, 1500);
+      });
+
+      buttons.proceedClient.addEventListener('click', () => {
+        console.log('Proceed to Sign Up (Client)');
+        showLoader();
+        setTimeout(() => {
+          hideLoader();
+          showToast("Redirecting to Sign Up...");
+          window.location.href = "https://accounts.dbueducation.com.au/chooseplan";
+        }, 1500);
+      });
+
+      /*---------------------------------------
+       * Existing Customer Sub-options
+       ---------------------------------------*/
+      buttons.existAccount.addEventListener('click', () => {
+        console.log('Existing Account Question Button Clicked');
+        document.getElementById('issue-title').textContent = "General Account Question";
+        document.getElementById('issue-text').value = "";
+        document.getElementById('char-count').textContent = "0";
+        hideValidationMessage(notifications.validation);
+        showScreen(screens.issue);
+      });
+      buttons.existPost.addEventListener('click', () => {
+        console.log('Existing Post Issue Button Clicked');
+        document.getElementById('issue-title').textContent = "Issue with a Post";
+        document.getElementById('issue-text').value = "";
+        document.getElementById('char-count').textContent = "0";
+        hideValidationMessage(notifications.validation);
+        showScreen(screens.issue);
+      });
+      buttons.existBilling.addEventListener('click', () => {
+        console.log('Existing Billing Issue Button Clicked');
+        showScreen(screens.billing);
+      });
+      buttons.existSupport.addEventListener('click', () => {
+        console.log('Existing Support Button Clicked');
+        showScreen(screens.support);
+      });
+
+      // Keyboard Accessibility
+      [buttons.existAccount, buttons.existPost, buttons.existBilling, buttons.existSupport].forEach(button => {
+        button.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            button.click();
+          }
+        });
+      });
+
+      /*---------------------------------------
+       * Submit Issue => AI Suggestions
+       ---------------------------------------*/
+      buttons.submitIssue.addEventListener('click', async () => {
+        console.log('Issue Submit Button Clicked');
+        const userIssue = document.getElementById('issue-text').value.trim();
+        
+        // Minimum character requirement to 25
+        if (userIssue.length < 25) {
+          showValidationMessage(notifications.validation, "Please describe your issue in at least 25 characters.", false);
+          return;
+        } else {
+          hideValidationMessage(notifications.validation);
+        }
+
+        // Show loader
+        showLoader();
+
+        // Generate AI suggestions
+        const suggestions = await getAISuggestions(userIssue);
+
+        // Hide loader
+        hideLoader();
+
+        // Check for keywords to auto-navigate
+        const autoNavigateKeywords = ["submit support ticket", "email"];
+        const shouldAutoNavigate = suggestions.some(suggestion => 
+          autoNavigateKeywords.some(keyword => suggestion.toLowerCase().includes(keyword))
+        );
+
+        if (shouldAutoNavigate) {
+          showToast("Redirecting to Submit a Support Ticket...");
+          showScreen(screens.support);
+          return;
+        }
+
+        // Display suggestions
+        const solutionsBox = document.getElementById('ai-solutions-box');
+        solutionsBox.innerHTML = "";
+        suggestions.forEach(line => {
+          solutionsBox.innerHTML += `<p>${line}</p>`;
+        });
+        showScreen(screens.solution);
+
+        // Determine whether to show the "Reach Out to Support" button
+        if (suggestions.length === 0 || suggestions.some(s => s.toLowerCase().includes("sorry"))) {
+          buttons.reachOutSupport.style.display = "block";
+        } else {
+          buttons.reachOutSupport.style.display = "none";
+        }
+      });
+      buttons.solutionDone.addEventListener('click', () => {
+        console.log('Solution Done Button Clicked');
+        showScreen(screens.initial);
+      });
+
+      /*---------------------------------------
+       * Submit General Question => AI Answer
+       ---------------------------------------*/
+      buttons.submitGeneral.addEventListener('click', async () => {
+        console.log('General Question Submit Button Clicked');
+        const userQuestion = document.getElementById('general-question-text').value.trim();
+        
+        // Minimum character requirement to 25
+        if (userQuestion.length < 25) {
+          showValidationMessage(notifications.generalValidation, "Please describe your question in at least 25 characters.", false);
+          return;
+        } else {
+          hideValidationMessage(notifications.generalValidation);
+        }
+
+        // Show loader
+        showLoader();
+
+        // Get AI answer
+        const answer = await getAISuggestions(userQuestion);
+
+        // Hide loader
+        hideLoader();
+
+        // Check for keywords to auto-navigate
+        const autoNavigateKeywords = ["submit support ticket", "email"];
+        const shouldAutoNavigate = answer.some(suggestion => 
+          autoNavigateKeywords.some(keyword => suggestion.toLowerCase().includes(keyword))
+        );
+
+        if (shouldAutoNavigate) {
+          showToast("Redirecting to Submit a Support Ticket...");
+          showScreen(screens.support);
+          return;
+        }
+
+        // Display answer
+        const solutionsBox = document.getElementById('ai-solutions-box');
+        solutionsBox.innerHTML = "";
+        answer.forEach(line => {
+          solutionsBox.innerHTML += `<p>${line}</p>`;
+        });
+        showScreen(screens.solution);
+
+        // Determine whether to show the "Reach Out to Support" button
+        if (answer.length === 0 || answer.some(s => s.toLowerCase().includes("sorry"))) {
+          buttons.reachOutSupport.style.display = "block";
+        } else {
+          buttons.reachOutSupport.style.display = "none";
+        }
+      });
+
+      /*---------------------------------------
+       * Submit Billing Issue => Webhook Submission and AI Response
+       ---------------------------------------*/
+      buttons.submitBilling.addEventListener('click', async () => {
+        console.log('Billing Issue Submit Button Clicked');
+        const billingIssue = document.getElementById('billing-issue-text').value.trim();
+
+        // Minimum character requirement to 25
+        if (billingIssue.length < 25) {
+          showValidationMessage(notifications.billing, "Please describe your billing issue in at least 25 characters.", false);
+          return;
+        } else {
+          hideValidationMessage(notifications.billing);
+        }
+
+        // Show loader
+        showLoader();
+
+        // Submit billing issue to webhook and get AI response
+        const aiSuggestions = await getAISuggestions(billingIssue);
+
+        // Hide loader
+        hideLoader();
+
+        // Check for keywords to auto-navigate
+        const autoNavigateKeywords = ["submit support ticket", "email"];
+        const shouldAutoNavigate = aiSuggestions.some(suggestion => 
+          autoNavigateKeywords.some(keyword => suggestion.toLowerCase().includes(keyword))
+        );
+
+        if (shouldAutoNavigate) {
+          showToast("Redirecting to Submit a Support Ticket...");
+          showScreen(screens.support);
+          return;
+        }
+
+        // Display AI suggestions in the solution screen
+        const solutionsBox = document.getElementById('ai-solutions-box');
+        solutionsBox.innerHTML = "";
+        aiSuggestions.forEach(line => {
+          solutionsBox.innerHTML += `<p>${line}</p>`;
+        });
+        showScreen(screens.solution);
+
+        // Determine whether to show the "Reach Out to Support" button
+        if (aiSuggestions.length === 0 || aiSuggestions.some(s => s.toLowerCase().includes("sorry"))) {
+          buttons.reachOutSupport.style.display = "block";
+        } else {
+          buttons.reachOutSupport.style.display = "none";
+        }
+      });
+
+      /*---------------------------------------
+       * Support Redirect => Loader => Redirect
+       ---------------------------------------*/
+      buttons.supportRedirect.addEventListener('click', () => {
+        console.log('Support Redirect Button Clicked');
+        showLoader();
+        setTimeout(() => {
+          hideLoader();
+          showToast("Redirecting to Support Ticket System...");
+          window.location.href = "https://accounts.dbueducation.com.au/somethingelse-help-cs/exi-new";
+        }, 1500);
+      });
+
+      /*---------------------------------------
+       * Reach Out to Support Button
+       ---------------------------------------*/
+      buttons.reachOutSupport.addEventListener('click', () => {
+        console.log('Reach Out to Support Button Clicked');
+        showLoader();
+        setTimeout(() => {
+          hideLoader();
+          showToast("Redirecting to Contact Support...");
+          window.location.href = "https://accounts.dbueducation.com.au/contact-support";
+        }, 1500);
+      });
+
+      /*---------------------------------------
+       * Accordion Functionality
+       ---------------------------------------*/
+      faq.accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+          const isActive = header.parentElement.classList.contains('active');
+          if (isActive) {
+            header.parentElement.classList.remove('active');
+            header.setAttribute('aria-expanded', 'false');
+          } else {
+            const currentlyActive = document.querySelector('.accordion-item.active');
+            if (currentlyActive) {
+              currentlyActive.classList.remove('active');
+              currentlyActive.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+            }
+            header.parentElement.classList.add('active');
+            header.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        header.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            header.click();
+          }
+        });
+      });
+
+      /*---------------------------------------
+       * FAQ Search Functionality
+       ---------------------------------------*/
+      function filterFAQs(query) {
+        let resultsFound = false;
+        faq.accordionItems.forEach(item => {
+          const question = item.querySelector('.accordion-header h3').textContent.toLowerCase();
+          const answer = item.querySelector('.accordion-content p').textContent.toLowerCase();
+          if (question.includes(query) || answer.includes(query)) {
+            item.style.display = "block";
+            resultsFound = true;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        if (resultsFound || query === "") {
+          notifications.noResults.style.display = "none";
+        } else {
+          notifications.noResults.style.display = "block";
+        }
+      }
+
+      // Since the search button is removed, implement real-time search as user types
+      faq.searchInput.addEventListener('input', () => {
+        const query = faq.searchInput.value.trim().toLowerCase();
+        console.log('FAQ Search Query:', query);
+        filterFAQs(query);
+      });
+
+      /*---------------------------------------
+       * AI Suggestions via Webhook
+       ---------------------------------------*/
+      async function getAISuggestions(text) {
+        try {
+          const response = await fetch('https://hook.eu2.make.com/ewywfkxdjknd85h4sa5osrhg7ycf6xv5', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: text
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error:', errorText);
+            return [`Sorry, I couldn't process your request. Error: ${errorText || 'Unknown error.'}`];
+          }
+
+          const data = await response.text();
+
+          if (data && data.trim()) {
+            const suggestions = data.split('\n').map(s => s.trim()).filter(s => s);
+            return suggestions;
+          } else {
+            return [`Sorry, I couldn't process your request.`];
+          }
+        } catch (error) {
+          console.error('Fetch Error:', error);
+          return [`Sorry, I couldn't process your request at the moment. Please try again later.`];
+        }
+      }
+
+      /*---------------------------------------
+       * Toast Notifications
+       ---------------------------------------*/
+      buttons.toastClose.addEventListener('click', () => {
+        notifications.toast.classList.remove('show');
+      });
+      // Function to show a toast
+      function showToast(message) {
+        notifications.toastMessage.textContent = message;
+        notifications.toast.classList.add('show');
+        setTimeout(() => {
+          notifications.toast.classList.remove('show');
+        }, 3000);
+      }
+      // Example usage: showToast("Your message here");
+
+      /*---------------------------------------
+       * Modal Functionality (Optional)
+       ---------------------------------------*/
+      // If you have a button to open the modal, uncomment and use the following code
+      /*
+      buttons.openModalButton.addEventListener('click', () => {
+        document.getElementById('info-modal').classList.remove('hidden');
+      });
+
+      buttons.closeModalButton.addEventListener('click', () => {
+        document.getElementById('info-modal').classList.add('hidden');
+      });
+
+      // Close modal when clicking outside the content
+      window.addEventListener('click', (e) => {
+        const modal = document.getElementById('info-modal');
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+      */
+
+      /*---------------------------------------
+       * Utility Functions
+       ---------------------------------------*/
+      function showLoader() {
+        loaderScreen.style.display = "flex";
+      }
+
+      function hideLoader() {
+        loaderScreen.style.display = "none";
+      }
+
+      function showValidationMessage(element, message, isSuccess) {
+        element.textContent = message;
+        if (isSuccess) {
+          element.classList.add('success');
+          element.classList.remove('error');
+        } else {
+          element.classList.add('error');
+          element.classList.remove('success');
+        }
+        element.style.display = "block";
+      }
+
+      function hideValidationMessage(element) {
+        element.textContent = "";
+        element.classList.remove('success', 'error');
+        element.style.display = "none";
+      }
+
+      /*---------------------------------------
+       * AI Interaction Handlers
+       ---------------------------------------*/
+      // Show AI Interaction Screen
+      function toggleAI() {
+        showScreen(screens.ai);
+      }
+
+      // Handle AI Form Submission
+      const aiForm = document.getElementById('ai-form');
+      aiForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const query = document.getElementById('ai-query').value.trim();
+        if (query === "") {
+          showValidationMessage(notifications.aiResponse, "Please enter a question.", false);
+          return;
+        }
+        notifications.aiResponse.classList.add('hidden');
+        notifications.aiResponse.innerHTML = "";
+        showLoader();
+
+        try {
+          const suggestions = await getAISuggestions(query);
+          hideLoader();
+
+          // Check for keywords to auto-navigate
+          const autoNavigateKeywords = ["submit support ticket", "email"];
+          const shouldAutoNavigate = suggestions.some(suggestion => 
+            autoNavigateKeywords.some(keyword => suggestion.toLowerCase().includes(keyword))
+          );
+
+          if (shouldAutoNavigate) {
+            showToast("Redirecting to Submit a Support Ticket...");
+            showScreen(screens.support);
+            return;
+          }
+
+          if (suggestions && suggestions.length > 0) {
+            notifications.aiResponse.innerHTML = `<p>${suggestions.join('</p><p>')}</p>`;
+          } else {
+            notifications.aiResponse.innerHTML = `<p>Sorry, I couldn't find an answer to your question.</p>`;
+          }
+        } catch (error) {
+          hideLoader();
+          notifications.aiResponse.innerHTML = `<p>There was an error processing your request. Please try again later.</p>`;
+          console.error('AI Request Error:', error);
+        }
+
+        notifications.aiResponse.classList.remove('hidden');
+        aiForm.reset();
+      });
+
+      /*---------------------------------------
+       * Rate Answer Functionality
+       ---------------------------------------*/
+      buttons.rateUp.addEventListener('click', () => {
+        console.log('User Thumbs Up');
+        showToast("Thank you for your feedback!");
+        // Optionally, you can handle positive feedback here
+      });
+
+      buttons.rateDown.addEventListener('click', () => {
+        console.log('User Thumbs Down');
+        // Prompt user if they want to ask AI again
+        const userChoice = confirm("Would you like to ask AI again?");
+        if (userChoice) {
+          showScreen(screens.ai);
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
